@@ -53,15 +53,23 @@ function concertThis(name) {
         .catch(function (err) {
             console.log(err);
         });
+}
 
-    function spotifyThisSong(name) {
-        spotify
-            .search({ type: 'track', query: 'All the Small Things' })
-            .then(function (response) {
-                console.log(response);
-            })
-            .catch(function (err) {
-                console.log(err);
-            });
-    }
+function spotifyThisSong(name) {
+    spotify
+        .search({ type: 'track', query: name })
+        .then(function (response) {
+            console.log(response.tracks.items[0]);
+            //Artist(s)
+
+            //The song's name
+
+            //A preview link of the song from Spotify
+
+            //The album that the song is from
+
+        })
+        .catch(function (err) {
+            console.log(err);
+        });
 }
