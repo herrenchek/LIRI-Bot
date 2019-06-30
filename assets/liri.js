@@ -37,6 +37,7 @@ function concertThis(name) {
     axios.get(queryURL)
         .then(function (response) {
             var data = response.data;
+
             if (!data.length) console.log('Sorry, there are no upcoming shows!');
             for (var i = 0; i < data.length; i++) {
                 var event = data[i];
@@ -57,17 +58,22 @@ function concertThis(name) {
 
 function spotifyThisSong(name) {
     spotify
-        .search({ type: 'track', query: name })
+        .search({ type: 'track', query: name, limit: 10 })
         .then(function (response) {
-            console.log(response.tracks.items[0]);
-            //Artist(s)
+            var items = response.tracks.items;
 
-            //The song's name
-
-            //A preview link of the song from Spotify
-
-            //The album that the song is from
-
+            for (var i = 0; i < items.length; i++) {
+                var album = items[i].album;
+                //Artist(s)
+                console.log(album.artists[0].name);
+                //The song's name
+                console.log(items[i].name)
+                //A preview link of the song from Spotify
+                console.log(items[i].external_urls.spotify);
+                //The album that the song is from
+                console.log(album.name);
+                console.log('\n')
+            }
         })
         .catch(function (err) {
             console.log(err);
