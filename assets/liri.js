@@ -4,6 +4,7 @@ require("dotenv").config();
 var axios = require("axios");
 var moment = require("moment");
 var Spotify = require('node-spotify-api');
+var fs = require("fs");
 
 var keys = require("./keys.js");
 
@@ -15,25 +16,27 @@ console.log(keys);
 var command = process.argv[2];
 var name = process.argv.slice(3).join(" ");
 
-switch (command) {
-    case 'concert-this':
-        concertThis(name);
-        break;
-    case 'spotify-this-song':
-        spotifyThisSong(name);
-        break;
-    case 'movie-this':
-        console.log('Oranges are $0.59 a pound.');
-        break;
-    case 'do-what-it-says':
-        console.log('Oranges are $0.59 a pound.');
-        break;
-    default:
-        console.log('Sorry, I don\'t recognize that command.');
-}
+function commands(command, name) {
+    switch (command) {
+        case 'concert-this':
+            concertThis(name);
+            break;
+        case 'spotify-this-song':
+            spotifyThisSong(name);
+            break;
+        case 'movie-this':
+            movieThis(name);
+            break;
+        case 'do-what-it-says':
+            doWhatItSays();
+            break;
+        default:
+            console.log('Sorry, I don\'t recognize that command.');
+    }
+};
 
 function concertThis(name) {
-    var queryURL = 'https://rest.bandsintown.com/artists/' + name + '/events?app_id=codingbootcamp';
+    var queryURL = `https://rest.bandsintown.com/artists/${name}/events?app_id=codingbootcamp`;
     axios.get(queryURL)
         .then(function (response) {
             var data = response.data;
@@ -57,6 +60,9 @@ function concertThis(name) {
 }
 
 function spotifyThisSong(name) {
+    if (!name) {
+        name = "The Sign";
+    }
     spotify
         .search({ type: 'track', query: name, limit: 10 })
         .then(function (response) {
@@ -79,3 +85,33 @@ function spotifyThisSong(name) {
             console.log(err);
         });
 }
+
+function movieThis(name) {
+    if (!name) {
+        name = "Mr. Nobody";
+    }
+    axios.get(`http://www.omdbapi.com/?t=${name}&apikey=trilogy`).then(
+        function (response) {
+            console.log(response.data.Title);
+            console.log(response.data.Year);
+            console.log(response.data.imdbRating);
+            console.log(response.data.Ratings[1].Value);
+            console.log(response.data.Language);
+            console.log(response.data.Plot);
+            console.log(response.data.Actors);
+        });
+}
+
+function doWhatItSays() {
+    fs.readFile("../random.txt", "utf8", function (error, data) {
+        //If the code experiences any errors it will log the error to the console
+        if (error) {
+            return console.log(error);
+        }
+        var dataArr = data.split(",");
+        console.log(dataArr)
+        commands(dataArr[0], dataArr[1]);
+    });
+}
+
+commands(command, name);
